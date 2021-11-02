@@ -39,7 +39,7 @@ class Exchange(Step):
         rename_col = {'store': '門市', 'sale_date': '認列日', 'TillID': '收銀機', 'transaction_time': '交易時間',
                       'TransactionId': '交易序號', 'tran_tendered': '整單金額', 'OperatorID': '收銀員',
                       'item_code': 'SKU', 'Quantity': '數量', 'price': '白標價', 'discounted_price': '價格',
-                      'discount': '折扣', 'CardNo': '卡號', 'voucher_used': '折價券', 'item_cdesc': '品名'}
+                      'discount': '折扣', 'CardNo': '卡號', 'voucher_used': '現金券', 'item_cdesc': '品名'}
 
         t_e.drop(columns=drop_col, inplace=True)
         insert_col = t_e.pop(t_e.columns[-1])

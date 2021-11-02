@@ -144,7 +144,7 @@ class Utils:
         'discounted_price': np.float32,
         'discount': np.float32,
         'CardNo': 'category',
-        'voucher_used': np.float16,
+        'voucher_used': np.float32, #16會被裁
     }
     def_type_inv = {
         'store': 'category', # no_null
@@ -155,10 +155,10 @@ class Utils:
         'GlobalTxnID': 'category', # no_null
         'OperatorID': 'category', # no_null
         'tran_tendered': np.float32,
-        'MediaType': np.float16,
+        'MediaType': np.float32,
         'Tendered': np.float32,
         'CardNo': str,
-        'voucher_used': np.float16,
+        'voucher_used': np.float32,
         'credit_card': str,
     }
     def_type_refund = {
@@ -177,7 +177,7 @@ class Utils:
         'price': np.float32,
         'discounted_price': np.float32,
         'CardNo': 'category',
-        'voucher_used': np.float16,
+        'voucher_used': np.float32,
     }
     def_type_point = {
         'store': 'category',
@@ -197,14 +197,14 @@ class Utils:
         'Card Number': 'category',
         'Member ID': 'category',
         'Member Point Sub-type': 'category',
-        '# of Member Point Accrual': np.float32,
-        '# of Member Point Redeemed': np.float32,
-        '# of Member Point Negative': np.float32,
+        '# of Member Point Accrual': np.float64,
+        '# of Member Point Redeemed': np.float64,
+        '# of Member Point Negative': np.float64,
         'Member Point Process Date': np.datetime64,
     }
     def_type_point_bal = {
         'Member ID': 'category',
-        'Member.Member Point Balance': np.int32,
-        'Member Point.Member Point Balance': np.int32,
+        'Member.Member Point Balance': np.int64,
+        'Member Point.Member Point Balance': np.int64,
         'Card Number': 'category',
     }

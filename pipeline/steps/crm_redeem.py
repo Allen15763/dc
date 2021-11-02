@@ -26,7 +26,7 @@ class CRM_REDEEM(Step):
         point_bal_raw = utils.import_point_bal('Daily point balance')
         L_point_bal_raw = utils.import_point_bal('LDaily point balance')
 
-        bo.fillna({'Member Point Sub-type': 'missing'}, inplace=True)
+        bo['Member Point Sub-type'] = bo['Member Point Sub-type'].cat.add_categories('missing').fillna({'Member Point Sub-type': 'missing'})
         bo.dropna(how='all')
         print('Finished Reading files')
 

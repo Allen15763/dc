@@ -42,7 +42,7 @@ class CRM_POINT(Step):
         print('Inv & Point processing')
         inv_raw.fillna({'voucher_used': 0, 'credit_card': 0, 'Tendered': 0, 'MediaType': 'missing',
                         'CardNo': 'missing'}, inplace=True)
-        print(inv_raw.isnull().sum())
+        print('INV na fill_after:', inv_raw.isnull().sum())
         inv = inv_raw.groupby(['store', 'sale_date', 'TillID', 'transaction_time', 'TransactionId', 'GlobalTxnID', 'OperatorID', 'tran_tendered',
                                'MediaType', 'CardNo', 'voucher_used', 'credit_card'], sort=False, observed=True)['Tendered'].sum().reset_index()
         """
@@ -60,15 +60,20 @@ class CRM_POINT(Step):
         move_col = inv_remove_media.pop(inv_remove_media.columns[-2])
         inv_remove_media.insert(8, move_col.name, move_col)
         inv_remove_media['折抵金額'].fillna(0, inplace=True)
+        print('Before fill na in point:', point_raw.isnull().sum())
 
-        point_raw['CardNo'].cat.add_categories('missing').fillna('missing', inplace=True)
+        # p_fill_cardno = point_raw.pop(point_raw.columns[-4])
+        # p_fill_cardno = p_fill_cardno.cat.add_categories('missing').fillna('missing')
+        # point_raw.insert(7, 'CardNo', p_fill_cardno)
+        point_raw['CardNo'] = point_raw['CardNo'].cat.add_categories('missing').fillna('missing')
+
         point_original = point_raw.copy()
+        print('After fill na in point:', point_original.isnull().sum())
         point_by_id = point_raw.groupby(['store', 'sale_date', 'TillID', 'transaction_time', 'TransactionId', 'GlobalTxnID', 'OperatorID',
                                          'tran_tendered', 'CardNo'], sort=False, observed=True)['points_earned'].sum().reset_index()
 
         inv_merge_point = pd.merge(inv_remove_media, point_by_id, how='left', on=['store', 'sale_date', 'TillID', 'transaction_time',
                                                                                   'TransactionId', 'GlobalTxnID', 'OperatorID', 'tran_tendered'])
-        print('inv_merge_point:', inv_merge_point['tran_tendered'].sum())
         inv_merge_point['DIFF'] = inv_merge_point['points_earned'] - inv_merge_point['Tendered'] + inv_merge_point['voucher_used']
 
         # inv_merge_point['Checking'] = np.where(inv_merge_point['DIFF'] < -2, 'abnormal', 'pass')
@@ -220,6 +225,7 @@ class CRM_POINT(Step):
 
         last_col = transaction_log.pop(transaction_log.columns[-1])
         transaction_log.insert(9, last_col.name, last_col)
+
         return transaction_log
 
     def point_details(self, transaction_log, point_original, over30klist_gid):
@@ -250,7 +256,7 @@ class CRM_POINT(Step):
         transaction_log.rename(columns={'store': '門市', 'sale_date': '業績日', 'TillID': '收銀機', 'transaction_time': '交易時間',
                                         'TransactionId': '交易序號', 'GlobalTxnID': 'GID', 'tran_tendered': '整單金額',
                                         'OperatorID': '收銀員', 'item_code': '貨號', 'item_cdesc': '品名', 'Quantity': '數量',
-                                        'discounted_price': '金額', 'CardNo': '卡號', 'voucher_used': '折價券',
+                                        'discounted_price': '金額', 'CardNo': '卡號', 'voucher_used': '現金券',
                                         'void_type': '取消類型', 'points_earned_x': 'based point',
                                         'points_earned_y': 'promo point'}, inplace=True)
         return inv_merge_point, transaction_log
